@@ -1,0 +1,31 @@
+<form id="form">
+  Nome: <input name="nome"><br>
+  Setor: <input name="setor"><br>
+  Telefone (DDD + número): <input name="cel"><br>
+  <button type="submit">Gerar QR e WhatsApp</button>
+</form>
+<div id="saida"></div>
+<script src="qrcode.min.js"></script>
+<script>
+document.getElementById('form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const nome = e.target.nome.value;
+  const setor = e.target.setor.value;
+  const telefone = e.target.cel.value; // ex: "11999988877"
+  const chegada = new Date().toLocaleDateString('pt-BR');
+  const agora = new Date();
+  const retiradaHora = new Date(agora.getTime() + 15*60*1000);
+  const retirada = retiradaHora.toLocaleTimeString('pt-BR',{hour:'2-digit', minute:'2-digit'});
+  const mensagem = `Olá ${nome}, seu produto chegou em ${chegada} às ${agora.toLocaleTimeString('pt-BR',{hour:'2-digit', minute:'2-digit'})}. Horário de retirada: ${retirada}. Setor responsável: ${setor}.`;
+  const texto = encodeURIComponent(mensagem);
+  const link = `https://wa.me/55${telefone}?text=${texto}`;
+  const container = document.getElementById('saida');
+  container.innerHTML = `
+    <p><a href="${link}" target="_blank">Abrir WhatsApp agora</a></p>
+    <div id="qrcode"></div>`;
+  new QRCode(document.getElementById('qrcode'), {
+    text: link,
+    width: 200, height: 200
+  });
+});
+</script>
